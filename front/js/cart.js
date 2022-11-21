@@ -32,7 +32,7 @@ fetch(`http://localhost:3000/api/products/`)
               </div>
               </article>`;
 
-      totalPriceBasket(foundProductId.price, foundProductId.qauntity);
+      totalPriceBasket();
       totalQuantity();
     });
 
