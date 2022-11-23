@@ -9,7 +9,6 @@ fetch(`http://localhost:3000/api/products/`)
     //RECUPERATION DES OBJETS DANS L'API
     basket.forEach((b) => {
       let foundProductId = products.find((p) => p._id == b.id);
-      //console.log(foundProductId);
       showProduct.innerHTML += `<article class="cart__item" data-id="${b.id}" data-color="${b.color}">
           <div class="cart__item__img">
             <img src="${foundProductId.imageUrl}" alt="${foundProductId.altTxt}">
@@ -31,26 +30,19 @@ fetch(`http://localhost:3000/api/products/`)
               </div>
               </div>
               </article>`;
-
       totalPriceBasket();
       totalQuantity();
     });
 
-    //CALCUL DU PRIX TOTAL
     function totalPriceBasket() {
-      // basket.forEach((b) => {
       const price = document.getElementById("totalPrice");
-      let totalPrice = basket.reduce((total, product) => {
-        let foundProductId = products.find((p) => p._id == basket.id);
-        total + foundProductId.price * product.quantity, 0;
-        console.log(foundProductId);
+      tP = 0;
+      basket.forEach((b) => {
+        let foundProductId = products.find((p) => p._id == b.id);
+        let totalPrice = foundProductId.price * b.quantity;
+        tP += totalPrice;
+        price.innerHTML = tP;
       });
-      // //console.log(foundProductId.price);
-      // let totalPrice = 0;
-      // const resultPrice = foundProductId.price * b.quantity;
-      // totalPrice += resultPrice;
-      price.innerHTML = totalPrice;
-      // });
     }
 
     // ADDITIONNER LES QUANTITEES
@@ -67,7 +59,6 @@ fetch(`http://localhost:3000/api/products/`)
 
     let inputQuantity = document.querySelectorAll(".itemQuantity");
     inputQuantity.forEach((q, i) => {
-      //console.log(basket[i].quantity);
       q.addEventListener("change", () => {
         basket[i].quantity = parseInt(q.value);
         localStorage.setItem("basket", JSON.stringify(basket));
@@ -91,12 +82,13 @@ fetch(`http://localhost:3000/api/products/`)
     console.log(err);
   });
 
-//----------------------------------------------------------------------------------------------------------
+// // //----------------------------------------------------------------------------------------------------------
 
 //CREATION DE L'EVENEMENT
 
 let submitForm = document.querySelector("#order");
-submitForm.addEventListener("click", () => {
+submitForm.addEventListener("click", (e) => {
+  e.preventDefault();
   let firstName = document.getElementById("firstName").value;
   let lastName = document.getElementById("lastName").value;
   let address = document.getElementById("address").value;
@@ -113,16 +105,6 @@ submitForm.addEventListener("click", () => {
   });
 
   //REGEX
-
-  // let regexName = /^[a-zA-Z]+$/;
-  // if (
-  //   regexName.test(firstName) === false ||
-  //   regexName.test(lastName) === false
-  // ) {
-  //   alert("Veuillez utiliser uniquement des lettres pour votre nom");
-  //   return true;
-  // }
-
   let regexEmail = /^[A-Za-z0-9+_.-]+@(.+)$/;
   if (regexEmail.test(email) === false) {
     alert("Merci de renseigner un email correct");

@@ -76,9 +76,11 @@ addToCart.addEventListener("click", () => {
       alert("Vous ne pouvez pas commander plus de 100 produits");
     } else {
       foundProduct.quantity = newQuantity;
+      alert("Votre produit à bien été ajouté au panier");
       localStorage.setItem("basket", JSON.stringify(basket));
     }
   } else if (Number(quantity.value) < 100) {
+    alert("Votre produit à bien été ajouté au panier");
     basket.push(data);
     localStorage.setItem("basket", JSON.stringify(basket));
   }
