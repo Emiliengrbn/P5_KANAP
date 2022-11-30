@@ -84,32 +84,57 @@ fetch(`http://localhost:3000/api/products/`)
 
 // // //----------------------------------------------------------------------------------------------------------
 
+//VERIFICATION DU FORMULAIRE
+let firstName = document.getElementById("firstName");
+let firstNameError = document.getElementById("firstNameErrorMsg");
+let lastName = document.getElementById("lastName");
+let lastNameError = document.getElementById("lastNameErrorMsg");
+let address = document.getElementById("address");
+let addressError = document.getElementById("addressErrorMsg");
+let city = document.getElementById("city");
+let cityError = document.getElementById("cityErrorMsg");
+let email = document.getElementById("email");
+let emailError = document.getElementById("emailErrorMsg");
+let regexOnlyLetter =
+  /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]+$/u;
+
+firstName.addEventListener("change", () => {
+  if (regexOnlyLetter.test(firstName.value) === false) {
+    firstNameError.innerHTML += `${"Veuillez renseignez un nom sans caractère spécial"}`;
+  }
+});
+lastName.addEventListener("change", () => {
+  if (regexOnlyLetter.test(lastName.value) === false) {
+    lastNameError.innerHTML += `${"Veuillez renseignez un nom sans caractère spécial"}`;
+  }
+});
+address.addEventListener("change", () => {
+  let regexAdress =
+    /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð0-9 ,.'-]+$/u;
+  if (regexAdress.test(address.value) === false) {
+    addressError.innerHTML += `${"Veuillez renseigner une adresse correct"}`;
+  }
+});
+city.addEventListener("change", () => {
+  if (regexOnlyLetter.test(city.value) === false) {
+    cityError.innerHTML += `${"Veuillez renseignez un nom sans caractère spécial"}`;
+  }
+});
+email.addEventListener("change", () => {
+  let regexEmail = /^[A-Za-z0-9+_.-]+@(.+)$/;
+  if (regexEmail.test(email.value) === false) {
+    emailError.innerHTML += `${"Veuillez renseigner un email correct"}`;
+  }
+});
+
 //CREATION DE L'EVENEMENT
 
 let submitForm = document.querySelector("#order");
+let form = document.querySelector(".cart__order__form");
+let inputForm = form.querySelectorAll("input");
 submitForm.addEventListener("click", (e) => {
   e.preventDefault();
-  let firstName = document.getElementById("firstName").value;
-  let lastName = document.getElementById("lastName").value;
-  let address = document.getElementById("address").value;
-  let city = document.getElementById("city").value;
-  let email = document.getElementById("email").value;
-  let form = document.querySelector(".cart__order__form");
-  let inputForm = form.querySelectorAll("input");
-
-  //VERIFICATION DU FORMULAIRE
-  inputForm.forEach((input) => {
-    if (input.value === "") {
-      alert("Veuillez renseigner le formulaire");
-    }
-  });
-
-  //REGEX
-  let regexEmail = /^[A-Za-z0-9+_.-]+@(.+)$/;
-  if (regexEmail.test(email) === false) {
-    alert("Merci de renseigner un email correct");
-    return true;
-  }
+  console.log(inputForm);
 
   //RECUPERATION DES ID
   let ids = [];
@@ -121,11 +146,11 @@ submitForm.addEventListener("click", (e) => {
   //CREATION DE L'OBJET CONTACT
   let body = {
     contact: {
-      firstName: firstName,
-      lastName: lastName,
-      address: address,
-      city: city,
-      email: email,
+      firstName: firstName.value,
+      lastName: lastName.value,
+      address: address.value,
+      city: city.value,
+      email: email.value,
     },
     products: ids,
   };
