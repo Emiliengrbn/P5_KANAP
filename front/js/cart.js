@@ -1,7 +1,7 @@
 //RECUPERATION LOCALSTORAGE
-let showProduct = document.getElementById("cart__items");
 let basket = JSON.parse(localStorage.getItem("basket"));
 
+let showProduct = document.getElementById("cart__items");
 //APPEL DE L'API
 fetch(`http://localhost:3000/api/products/`)
   .then((res) => res.json())
@@ -75,6 +75,9 @@ fetch(`http://localhost:3000/api/products/`)
         basket.splice(i, 1);
         localStorage.setItem("basket", JSON.stringify(basket));
         location.reload();
+        if (basket.length === 0) {
+          localStorage.clear();
+        }
       });
     });
   })
@@ -97,36 +100,73 @@ let email = document.getElementById("email");
 let emailError = document.getElementById("emailErrorMsg");
 let regexOnlyLetter =
   /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]+$/u;
+let firstNameCheck = false;
+let lastNameCheck = false;
+let addressCheck = false;
+let cityCheck = false;
+let emailCheck = false;
 
 firstName.addEventListener("change", () => {
   if (regexOnlyLetter.test(firstName.value) === false) {
-    firstNameError.innerHTML += `${"Veuillez renseignez un nom sans caractère spécial"}`;
+    firstNameError.innerHTML =
+      "Veuillez renseignez un nom sans caractère spécial";
+    firstNameCheck = false;
+  } else {
+    firstNameError.innerHTML = "";
+    firstNameCheck = true;
   }
 });
+
+// ajouter un evenement au changement sur le input id firstName
+// si la valeur de l'input firstName ne correspond pas au regex onlyletter
+// j'affiche un message pour informer l'utilisateur
+//je bloque la possiblilité d'envoyer le fetch
+// sinon je vide le message d'erreur et j'ouvre la possiblité d'evoyé le fetch
+
 lastName.addEventListener("change", () => {
   if (regexOnlyLetter.test(lastName.value) === false) {
-    lastNameError.innerHTML += `${"Veuillez renseignez un nom sans caractère spécial"}`;
+    lastNameError.innerHTML =
+      "Veuillez renseignez un nom sans caractère spécial";
+    lastNameCheck = false;
+  } else {
+    lastNameError.innerHTML = "";
+    lastNameCheck = true;
   }
 });
 address.addEventListener("change", () => {
   let regexAdress =
     /^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð0-9 ,.'-]+$/u;
   if (regexAdress.test(address.value) === false) {
-    addressError.innerHTML += `${"Veuillez renseigner une adresse correct"}`;
+    addressError.innerHTML = "Veuillez renseigner une adresse correct";
+    addressCheck = false;
+  } else {
+    addressError.innerHTML = "";
+    addressCheck = true;
   }
 });
 city.addEventListener("change", () => {
   if (regexOnlyLetter.test(city.value) === false) {
-    cityError.innerHTML += `${"Veuillez renseignez un nom sans caractère spécial"}`;
+    cityError.innerHTML = "Veuillez renseignez un nom sans caractère spécial";
+    cityCheck = false;
+  } else {
+    cityError.innerHTML = "";
+    cityCheck = true;
   }
 });
 email.addEventListener("change", () => {
   let regexEmail = /^[A-Za-z0-9+_.-]+@(.+)$/;
   if (regexEmail.test(email.value) === false) {
-    emailError.innerHTML += `${"Veuillez renseigner un email correct"}`;
+    emailError.innerHTML = "Veuillez renseigner un email correct";
+    emailCheck = false;
+  } else {
+    emailError.innerHTML = "";
+    emailCheck = true;
   }
 });
 
+if (localStorage.length === 0) {
+  alert("Votre panier est vide");
+}
 //CREATION DE L'EVENEMENT
 
 let submitForm = document.querySelector("#order");
@@ -134,7 +174,10 @@ let form = document.querySelector(".cart__order__form");
 let inputForm = form.querySelectorAll("input");
 submitForm.addEventListener("click", (e) => {
   e.preventDefault();
-  console.log(inputForm);
+
+  if (localStorage.length === 0) {
+    alert("Votre panier est vide");
+  }
 
   //RECUPERATION DES ID
   let ids = [];
@@ -155,20 +198,29 @@ submitForm.addEventListener("click", (e) => {
     products: ids,
   };
 
-  //ENVOI DES INFOS A L'API
-  fetch("http://localhost:3000/api/products/order", {
-    method: "POST",
-    body: JSON.stringify(body),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      //REDIRECTION VERS LA PAGE CONFIRMATION
-      let orderId = data.orderId;
-      window.location.href = "./confirmation.html" + "?orderId=" + orderId;
-      return console.log(data);
+  if (
+    firstNameCheck &&
+    lastNameCheck &&
+    addressCheck &&
+    cityCheck &&
+    emailCheck
+  ) {
+    //ENVOI DES INFOS A L'API
+    fetch("http://localhost:3000/api/products/order", {
+      method: "POST",
+      body: JSON.stringify(body),
+      headers: {
+        "Content-Type": "application/json",
+      },
     })
-    .catch((err) => console.log(err));
+      .then((res) => res.json())
+      .then((data) => {
+        //REDIRECTION VERS LA PAGE CONFIRMATION
+        let orderId = data.orderId;
+        window.location.href = "./confirmation.html" + "?orderId=" + orderId;
+      })
+      .catch((err) => console.log(err));
+  } else {
+    alert("Merci de remplir le formulaire correctement");
+  }
 });

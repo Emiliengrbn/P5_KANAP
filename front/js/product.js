@@ -71,7 +71,6 @@ addToCart.addEventListener("click", () => {
   let foundProduct = basket.find((p) => p.id == id && p.color == color.value);
   if (foundProduct != undefined) {
     let newQuantity = foundProduct.quantity + Number(quantity.value);
-    console.log(newQuantity);
     if (newQuantity > 100) {
       alert("Vous ne pouvez pas commander plus de 100 produits");
     } else {
